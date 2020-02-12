@@ -151,7 +151,7 @@ class ESmartyViewRenderer extends CApplicationComponent implements IViewRenderer
 		// configure smarty
 		if (is_array($this->config)) {
 			foreach ($this->config as $key => $value) {
-				if ($key{0} != '_') { // not setting semi-private properties
+				if ($key[0] != '_') { // not setting semi-private properties
 					$this->getSmarty()->$key = $value;
 				}
 			}
@@ -172,8 +172,10 @@ class ESmartyViewRenderer extends CApplicationComponent implements IViewRenderer
 		//Register default template handler. This allow us to use yii aliases in the smarty templates.
 		//You shoud set path without extension
 		//for example {include file="application.views.layout.main"}
-		$this->getSmarty()->default_template_handler_func = create_function('$type, $name', 'return Yii::getPathOfAlias($name) . "' . $this->fileExtension .'";'); 
- 
+		$this->getSmarty()->default_template_handler_func = function ($type, $name) {
+			return Yii::getPathOfAlias($name) . $this->fileExtension;
+		};
+
 		$this->getSmarty()->addPluginsDir(Yii::getPathOfAlias($this->smartyDir.'.plugins'));
 		if(!empty($this->pluginsDir)){
 		    $plugin_path = Yii::getPathOfAlias($this->pluginsDir);
@@ -203,7 +205,7 @@ class ESmartyViewRenderer extends CApplicationComponent implements IViewRenderer
 			    $this->getSmarty()->registerPlugin('block',$name,$plugin);
 			}
 		}
-		
+
 		if ($this->modifiers){
 			foreach ($this->modifiers as $name => $plugin) {
 			    $this->getSmarty()->registerPlugin('modifier',$name,$plugin);
